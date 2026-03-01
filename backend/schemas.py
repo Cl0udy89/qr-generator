@@ -51,5 +51,4 @@ class AnalyticsResponse(BaseModel):
     scans_over_time: List[Dict[str, Any]] # e.g. {"date": "...", "count": ...}
     os_stats: List[Dict[str, Any]]
     browser_stats: List[Dict[str, Any]]
-    location_stats: List[Dict[str, Any]]
     device_stats: Optional[List[Dict[str, Any]]] = None

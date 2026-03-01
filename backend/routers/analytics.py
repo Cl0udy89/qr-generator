@@ -46,17 +46,12 @@ def get_analytics(
     device_counts = Counter([s.device_type for s in scans])
     device_stats = [{"name": d_name, "value": count} for d_name, count in device_counts.items() if count > 0]
     
-    location_counts = Counter([f"{s.country} - {s.city}" for s in scans if s.country != "Unknown"])
-    location_stats = [{"name": loc, "value": count} for loc, count in location_counts.items() if count > 0]
-    if not location_stats and total_scans > 0:
-        location_stats = [{"name": "Unknown", "value": total_scans}]
-
     # Timeline formatting logic
     dates = []
     for s in scans:
         if s.scanned_at:
             if timeframe == "today":
-                dates.append(s.scanned_at.strftime("%H:00")) # Group by hour
+                dates.append(s.scanned_at.strftime("%H:%M")) # Group by exact minute
             else:
                 dates.append(s.scanned_at.strftime("%Y-%m-%d"))
 
@@ -75,7 +70,6 @@ def get_analytics(
         "scans_over_time": scans_over_time,
         "os_stats": os_stats,
         "browser_stats": browser_stats,
-        "location_stats": location_stats,
         "device_stats": device_stats
     }
 

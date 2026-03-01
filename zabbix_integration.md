@@ -1,45 +1,59 @@
-# Integrating QRytics with Zabbix
+# Monitorowanie QRytics (Zabbix & Grafana)
 
-This guide explains how to connect the new QRytics backend to your Zabbix monitoring infrastructure. With the addition of the raw access logs endpoint, Zabbix can pull complete analytics data and alert you on traffic spikes, unique IPs, or location data.
+System QRytics w nowej aktualizacji API (V2) został zaprojektowany z myślą o prostym wpięciu w standardowe maszyny monitorujące (NOC). Najszybszym sposobem na wizualizacje użycia kodów czy wolumenu ruchu jest bezpośrednie odpytanie naszego serwera FastAPI.
 
-## 1. Setup Zabbix HTTP Agent Item
+## Pobieranie danych (HTTP Agent)
 
-You can use Zabbix's built-in **HTTP agent** to periodically poll the analytics API.
+Nasz główny punkt styku to darmowy endpoint analityczny. Dla wybranego `ID` kampanii QR (które widać w panelu jako `LIVE ID: {uuid}`) wywołujemy zapytanie:
 
-1. Navigate to your Zabbix host configuration -> **Items** -> **Create item**
-2. **Name:** QR Campaign Analytics ({your_campaign_name})
-3. **Type:** HTTP agent
-4. **Key:** `qr.campaign.analytics`
-5. **URL:** `http://<your_backend_ip>:8000/api/analytics/<your_qr_id>` 
-   *For raw logs:* `http://<your_backend_ip>:8000/api/analytics/<your_qr_id>/logs`
-6. **Request type:** GET
-7. **Type of information:** Text
+```http
+GET http://192.168.50.145:8000/api/analytics/{TWOJE_ID_KAMPANII}?timeframe=all
+```
 
-## 2. Using Zabbix Dependent Items (JSONPath)
+**Zwrócony format (JSON):**
+```json
+{
+  "qr_code": {
+    "id": "e2d8ab94-...",
+    "campaign_name": "Summer Promo",
+    "target_url": "https://...",
+    "created_at": "2024-..."
+  },
+  "total_scans": 1502,
+  "scans_over_time": [],
+  "os_stats": [],
+  "browser_stats": [],
+  "device_stats": []
+}
+```
 
-Once you have the master HTTP agent pulling the full JSON array, create **Dependent items** to parse specific metrics using Zabbix Preprocessing.
+---
 
-### Total Scans
-- **Type:** Dependent item
-- **Master item:** QR Campaign Analytics
-- **Type of information:** Numeric (unsigned)
-- **Preprocessing steps:**
-  - Name: `JSONPath`, Parameter: `$.total_scans`
+## Integracja w systemie Zabbix
 
-### Extracting Log Information
-For the `/logs` endpoint, the API returns an array. You can count the latest entries or track unique IPs:
-- **Preprocessing steps for counting array length:**
-  - Name: `JSONPath`, Parameter: `$.length()`
+Jeśli Twoim głównym nadzorcą jest system **Zabbix**, najprostszą formą zrzutu będzie "Item" wyciągający tylko liczbę kliknięć w głównym panelu powiadomień.
 
-## 3. Creating Triggers (Alerts)
+1. W stacji Zabbix przejdź do Host -> **Items** -> Create Item.
+2. Zdefiniuj obiekt typu: **HTTP Agent**.
+3. **URL:** `http://192.168.50.145:8000/api/analytics/{TWOJE_ID_KAMPANII}?timeframe=today`
+4. **Type of information:** `Numeric (unsigned)`
+5. Przejdź do zakładki **Preprocessing** na samej górze.
+6. Dodaj krok: **JSONPath**
+7. Jako parametr wpisz dokładnie ścieżkę do liczby: `$.total_scans`
 
-With the total scans populated, create a trigger to notify your team when a campaign achieves a milestone or receives unusual traffic.
+*Zabbix będzie teraz pyścił co np. 30s zapytanie po HTTP do kontenera w LXC i wyciągał z gigantycznego JSONa tylko jedną interesującą go liczbę (ilość skanów z danego dnia), po czym namaluje na ten temat sam z siebie wykres!*
 
-- **Name:** High Traffic on QR Campaign
-- **Expression:** `last(/Your_Host/qr.campaign.analytics_total)>1000`
-- **Severity:** Warning
+---
 
-## 4. API Endpoints Reference
+## Integracja w panelu Grafana + JSON API
 
-- `GET /api/analytics/{id}?timeframe=all|year|month|week|today` - Returns aggregated campaign statistics.
-- `GET /api/analytics/{id}/logs` - Returns raw scan data (JSON Array) including IP, OS, Browser, and Location.
+Grafana sprawdza się cudownie w czytaniu surowych list. Jeżeli Twój lokalny serwer Grafany jest gotowy to:
+
+1. Przejdź do zakładki "Connections" / "Data Sources" w Grafanie.
+2. Zainstaluj i aktywuj Plugin o nazwie **"JSON API"** (od Marcus Olsson).
+3. Dodaj to Data Source'a i ustaw Endpoint główny w Grafanie jako `http://192.168.50.145:8000`.
+4. Stwórz nowy Dashboard. Przy tworzeniu pierwszego Wykresu Liniowego czy Kołowego jako źródło wskaż "JSON API".
+5. W zakładce "Path" podaj: `/api/analytics/{TWOJE_ID}/logs` 
+6. Skonfiguruj `Fields` mówiąc Grafanie by zaczytywała `.ip_address`, `.browser` oraz `.scanned_at`. (By traktowała to ostanie jako ścieżkę czasu `Time`).
+
+Od teraz jesteś w stanie stworzyć swój własny NOC z podłączonymi na żywo wykresami Grafany z pominięciem interfejsu mojego skryptu.

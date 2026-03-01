@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { getAnalytics, getAnalyticsLogs } from '@/lib/api'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Loader2, QrCode, Globe, Target, Smartphone, PieChart as PieChartIcon, MousePointerClick, CalendarDays, BarChart3, Clock, MapPin, Monitor } from 'lucide-react'
+import { ArrowLeft, Loader2, QrCode, Globe, Target, Smartphone, PieChart as PieChartIcon, MousePointerClick, CalendarDays, BarChart3, Clock, Monitor } from 'lucide-react'
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, BarChart, Bar
+    PieChart, Pie, Cell
 } from 'recharts'
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
@@ -28,9 +28,9 @@ export default function AnalyticsDetails() {
     const [loading, setLoading] = useState(true)
     const [timeframe, setTimeframe] = useState('all')
 
-    const fetchData = async () => {
+    const fetchData = async (showLoader = true) => {
         if (!id) return;
-        setLoading(true);
+        if (showLoader) setLoading(true);
         try {
             const [analyticsRes, logsRes] = await Promise.all([
                 getAnalytics(id as string, timeframe),
@@ -41,12 +41,19 @@ export default function AnalyticsDetails() {
         } catch (err) {
             console.error(err);
         } finally {
-            setLoading(false);
+            if (showLoader) setLoading(false);
         }
     }
 
+    // Initial fetch and interval logic
     useEffect(() => {
-        fetchData();
+        fetchData(true);
+
+        const intervalId = setInterval(() => {
+            fetchData(false); // background refresh
+        }, 10000); // 10 seconds
+
+        return () => clearInterval(intervalId);
     }, [id, timeframe])
 
     if (loading && !data) {
@@ -69,7 +76,7 @@ export default function AnalyticsDetails() {
         )
     }
 
-    const { qr_code, total_scans, scans_over_time, os_stats, browser_stats, location_stats } = data
+    const { qr_code, total_scans, scans_over_time, os_stats, browser_stats } = data
 
     return (
         <div className="space-y-8 animate-slide-up">
@@ -80,12 +87,12 @@ export default function AnalyticsDetails() {
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                     <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700 shadow-sm flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        ID: {qr_code.id}
+                        LIVE ID: {qr_code.id}
                     </div>
                     <select
                         value={timeframe}
                         onChange={(e) => setTimeframe(e.target.value)}
-                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm font-bold rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500/50 ml-auto sm:ml-0"
+                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm font-bold rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500/50 ml-auto sm:ml-0 cursor-pointer shadow-sm"
                     >
                         {timeframes.map((tf) => (
                             <option key={tf.value} value={tf.value}>{tf.label}</option>
@@ -232,42 +239,13 @@ export default function AnalyticsDetails() {
                     </div>
                 </div>
 
-                {/* Locations (Bar Chart) */}
-                <div className="glass-panel p-8 rounded-3xl lg:col-span-2 group hover:shadow-2xl hover:shadow-fuchsia-500/5 transition-all duration-500">
-                    <h3 className="text-xl font-extrabold mb-8 flex items-center gap-3 text-slate-800 dark:text-white">
-                        <div className="p-2 bg-fuchsia-500/10 text-fuchsia-500 rounded-xl">
-                            <MapPin size={20} />
-                        </div>
-                        Top Locations
-                    </h3>
-                    <div className="h-80 w-full">
-                        {location_stats && location_stats.length > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={location_stats} layout="vertical" margin={{ top: 10, right: 30, left: 40, bottom: 10 }}>
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
-                                    <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} fontSize={13} fontWeight={600} stroke="#475569" width={120} />
-                                    <Tooltip cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                                    <Bar dataKey="value" fill="#8b5cf6" radius={[0, 8, 8, 0]} barSize={32}>
-                                        {
-                                            location_stats.map((entry: any, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))
-                                        }
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        ) : <div className="h-full flex items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200">No data available</div>}
-                    </div>
-                </div>
-
                 {/* Raw Logs Data Table */}
                 <div className="glass-panel p-8 rounded-3xl lg:col-span-2 group hover:shadow-2xl hover:shadow-slate-500/5 transition-all duration-500 overflow-hidden">
                     <h3 className="text-xl font-extrabold mb-8 flex items-center gap-3 text-slate-800 dark:text-white">
                         <div className="p-2 bg-slate-500/10 text-slate-500 dark:text-slate-300 rounded-xl">
                             <Monitor size={20} />
                         </div>
-                        Raw Access Logs
+                        Live Access Logs
                     </h3>
 
                     <div className="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
@@ -280,7 +258,6 @@ export default function AnalyticsDetails() {
                                         <th className="px-6 py-4 font-bold">OS</th>
                                         <th className="px-6 py-4 font-bold">Browser</th>
                                         <th className="px-6 py-4 font-bold">Device</th>
-                                        <th className="px-6 py-4 font-bold">Location</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -294,7 +271,6 @@ export default function AnalyticsDetails() {
                                             <td className="px-6 py-4">{log.os}</td>
                                             <td className="px-6 py-4">{log.browser}</td>
                                             <td className="px-6 py-4">{log.device_type}</td>
-                                            <td className="px-6 py-4">{log.city !== "Unknown" ? `${log.country} - ${log.city}` : "Unknown"}</td>
                                         </tr>
                                     ))}
                                 </tbody>

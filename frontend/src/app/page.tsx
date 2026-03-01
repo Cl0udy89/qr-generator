@@ -20,19 +20,27 @@ export default function Dashboard() {
   const [savingId, setSavingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const fetchQRs = async () => {
+  const fetchQRs = async (showLoader = true) => {
     try {
+      if (showLoader) setLoading(true)
       const data = await getQRCodes()
       setQrs(data)
     } catch (err) {
       console.error(err)
     } finally {
-      setLoading(false)
+      if (showLoader) setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchQRs()
+    fetchQRs(true)
+
+    // Auto-refresh every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchQRs(false)
+    }, 10000)
+
+    return () => clearInterval(intervalId)
   }, [])
 
   const handleCreate = async (e: React.FormEvent) => {
