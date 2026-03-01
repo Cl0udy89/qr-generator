@@ -25,7 +25,7 @@ export default function RootLayout({
               <div className="bg-blue-600 text-white p-2 rounded-lg">
                 <QrCode size={24} />
               </div>
-              <span className="font-bold text-xl text-slate-800">QRytics MVP</span>
+              <span className="font-bold text-xl text-slate-800">QRytics</span>
             </Link>
           </div>
         </header>
