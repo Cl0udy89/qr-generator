@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+    if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+    if (typeof window !== 'undefined') {
+        return `http://${window.location.hostname}:8000/api`;
+    }
+    return 'http://localhost:8000/api';
+};
+
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+    baseURL: getBaseURL(),
 });
 
 export const createQRCode = async (campaign_name: string, target_url: string) => {
