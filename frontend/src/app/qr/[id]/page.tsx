@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { getAnalytics } from '@/lib/api'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Loader2, QrCode, Globe, Target, Smartphone, PieChart as PieChartIcon, MousePointerClick, CalendarDays } from 'lucide-react'
+import { ArrowLeft, Loader2, QrCode, Globe, Target, Smartphone, PieChart as PieChartIcon, MousePointerClick, CalendarDays, BarChart3 } from 'lucide-react'
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, BarChart, Bar
