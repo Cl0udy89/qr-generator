@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat python3 make g++
 
 # Configure memory limits for npm/node
-ENV NODE_OPTIONS="--max-old-space-size=1024"
+ENV NODE_OPTIONS="--max-old-space-size=1024 --dns-result-order=ipv4first"
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Install dependencies first (caching layer)

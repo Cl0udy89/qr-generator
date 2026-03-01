@@ -5,12 +5,12 @@ const api = axios.create({
 });
 
 export const createQRCode = async (campaign_name: string, target_url: string) => {
-    const response = await api.post('/qr/', { campaign_name, target_url });
+    const response = await api.post('/qr', { campaign_name, target_url });
     return response.data;
 };
 
 export const getQRCodes = async () => {
-    const response = await api.get('/qr/');
+    const response = await api.get('/qr');
     return response.data;
 };
 

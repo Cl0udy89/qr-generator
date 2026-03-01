@@ -24,7 +24,7 @@ def generate_qr_image(qr_id: str, target_url: str):
     img.save(file_path)
     return file_path
 
-@router.post("/", response_model=schemas.QRCodeResponse)
+@router.post("", response_model=schemas.QRCodeResponse)
 def create_qr_code(qr_in: schemas.QRCodeCreate, db: Session = Depends(get_db)):
     qr_id = str(uuid.uuid4())[:8] # Short hash
     
@@ -48,7 +48,7 @@ def create_qr_code(qr_in: schemas.QRCodeCreate, db: Session = Depends(get_db)):
         "qr_image_url": f"/static/qr_codes/{qr_id}.png"
     }
 
-@router.get("/", response_model=List[schemas.QRCodeResponse])
+@router.get("", response_model=List[schemas.QRCodeResponse])
 def list_qr_codes(db: Session = Depends(get_db)):
     qrs = db.query(models.QRCodeModel).order_by(models.QRCodeModel.created_at.desc()).all()
     results = []
