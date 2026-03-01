@@ -25,6 +25,8 @@ services:
       - db
     volumes:
       - ./backend:/app
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
 
   frontend:
     build: ./frontend
@@ -34,6 +36,8 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
 
 volumes:
   postgres_data:
