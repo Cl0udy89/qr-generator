@@ -23,8 +23,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    volumes:
-      - ./backend:/app
 
   frontend:
     build: ./frontend
@@ -32,8 +30,6 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
 
 volumes:
   postgres_data:
