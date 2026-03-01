@@ -58,12 +58,12 @@ export default function Dashboard() {
 
       {/* Sidebar: Create Form */}
       <div className="lg:col-span-4">
-        <div className="glass-panel p-8 rounded-3xl sticky top-28 transition-all hover:shadow-2xl hover:shadow-blue-500/10">
+        <div className="glass-panel p-8 rounded-3xl sticky top-28 transition-all hover:shadow-2xl">
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-600 rounded-2xl border border-blue-500/20">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl border border-blue-200 dark:border-blue-800/50">
               <Plus size={24} strokeWidth={2.5} />
             </div>
-            <h2 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-300">
+            <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white">
               New Campaign
             </h2>
           </div>
@@ -96,7 +96,7 @@ export default function Dashboard() {
             <button
               type="submit"
               disabled={creating}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100 disabled:hover:shadow-none mt-4 group"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100 mt-4 group"
             >
               {creating ? <Loader2 size={20} className="animate-spin" /> : (
                 <>
