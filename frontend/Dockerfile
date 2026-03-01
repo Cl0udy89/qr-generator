@@ -1,13 +1,23 @@
-FROM node:20
+FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-ENV NODE_OPTIONS="--max-old-space-size=512"
+# Install dependencies required by node-gyp and alpine
+RUN apk add --no-cache libc6-compat python3 make g++
+
+# Configure memory limits for npm/node
+ENV NODE_OPTIONS="--max-old-space-size=1024"
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY package*.json ./
-RUN npm cache clean --force && npm install --no-audit --no-fund --legacy-peer-deps
+# Install dependencies first (caching layer)
+COPY package.json package-lock.json* ./
+# Use clean npm install and immediately clear cache in the same layer to save space
+RUN npm ci --prefer-offline --no-audit --no-fund --legacy-peer-deps && \
+    npm cache clean --force
 
+# Copy application source code
 COPY . .
 
+# Run the app in development mode
 CMD ["npm", "run", "dev"]
