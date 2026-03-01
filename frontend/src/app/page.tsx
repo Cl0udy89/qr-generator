@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createQRCode, getQRCodes } from '@/lib/api'
 import Link from 'next/link'
-import { QrCode, ArrowRight, BarChart3, Plus, Link as LinkIcon, Download, Loader2 } from 'lucide-react'
+import { QrCode, ArrowRight, BarChart3, Plus, Link as LinkIcon, Download, Loader2, Target } from 'lucide-react'
 
 export default function Dashboard() {
   const [qrs, setQrs] = useState<any[]>([])
