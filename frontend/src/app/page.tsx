@@ -164,7 +164,7 @@ export default function Dashboard() {
 
                 <div className="flex gap-5 items-center mb-8 flex-1">
                   <div className="w-20 h-20 bg-white p-1.5 border-2 border-slate-100 dark:border-slate-700 rounded-2xl shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-500">
-                    <img src={getImageUrl(qr.qr_image_url)} alt="QR" className="w-full h-full object-contain mix-blend-multiply" />
+                    <img src={qr.qr_image_url} alt="QR" className="w-full h-full object-contain mix-blend-multiply" />
                   </div>
                   <div className="overflow-hidden space-y-1.5">
                     <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
@@ -180,7 +180,7 @@ export default function Dashboard() {
                   <Link href={`/qr/${qr.id}`} className="flex-1 bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-white py-3 rounded-xl text-sm font-bold transition-transform active:scale-95 flex items-center justify-center gap-2 shadow-md">
                     <BarChart3 size={18} /> Analytics Space
                   </Link>
-                  <a href={getImageUrl(qr.qr_image_url)} download={`qr-${qr.id}.png`} target="_blank" className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md group/dl">
+                  <a href={qr.qr_image_url} download={`qr-${qr.id}.png`} target="_blank" className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md group/dl">
                     <Download size={18} className="group-hover/dl:translate-y-0.5 transition-transform" />
                   </a>
                 </div>

@@ -1,7 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://backend:8000/api/:path*',
+      },
+      {
+        source: '/static/:path*',
+        destination: 'http://backend:8000/static/:path*',
+      },
+      {
+        source: '/qr_codes/:path*',
+        destination: 'http://backend:8000/qr_codes/:path*',
+      }
+    ]
+  },
 };
 
 export default nextConfig;

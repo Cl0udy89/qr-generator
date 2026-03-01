@@ -78,7 +78,7 @@ export default function AnalyticsDetails() {
                         <p className="text-5xl font-black tracking-tight">{total_scans}</p>
                     </div>
                     <div className="w-28 h-28 bg-white p-2 border-2 border-white/50 rounded-2xl shadow-xl shrink-0 group-hover:scale-105 transition-transform duration-500">
-                        <img src={`http://localhost:8000${qr_code.qr_image_url}`} alt="QR Code" className="w-full h-full object-contain mix-blend-multiply" />
+                        <img src={qr_code.qr_image_url} alt="QR Code" className="w-full h-full object-contain mix-blend-multiply" />
                     </div>
                 </div>
             </div>
