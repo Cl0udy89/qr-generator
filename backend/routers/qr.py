@@ -59,3 +59,41 @@ def list_qr_codes(db: Session = Depends(get_db)):
             "qr_image_url": f"/static/qr_codes/{qr.id}.png"
         })
     return results
+
+@router.put("/{qr_id}", response_model=schemas.QRCodeResponse)
+def update_qr_code(qr_id: str, qr_in: schemas.QRCodeUpdate, db: Session = Depends(get_db)):
+    qr = db.query(models.QRCodeModel).filter(models.QRCodeModel.id == qr_id).first()
+    if not qr:
+        raise HTTPException(status_code=404, detail="QR Code not found")
+        
+    if qr_in.campaign_name is not None:
+        qr.campaign_name = qr_in.campaign_name
+    if qr_in.target_url is not None:
+        qr.target_url = str(qr_in.target_url)
+        
+    db.commit()
+    db.refresh(qr)
+    
+    return {
+        "id": qr.id,
+        "campaign_name": qr.campaign_name,
+        "target_url": qr.target_url,
+        "created_at": qr.created_at,
+        "qr_image_url": f"/static/qr_codes/{qr.id}.png"
+    }
+
+@router.delete("/{qr_id}")
+def delete_qr_code(qr_id: str, db: Session = Depends(get_db)):
+    qr = db.query(models.QRCodeModel).filter(models.QRCodeModel.id == qr_id).first()
+    if not qr:
+        raise HTTPException(status_code=404, detail="QR Code not found")
+        
+    db.delete(qr)
+    db.commit()
+    
+    # Optionally delete the file as well
+    file_path = f"static/qr_codes/{qr_id}.png"
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        
+    return {"message": "QR Code deleted successfully"}

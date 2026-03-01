@@ -7,6 +7,10 @@ class QRCodeCreate(BaseModel):
     target_url: HttpUrl
     base_url: Optional[str] = "http://localhost:3000"
 
+class QRCodeUpdate(BaseModel):
+    campaign_name: Optional[str] = None
+    target_url: Optional[HttpUrl] = None
+
 class QRCodeResponse(BaseModel):
     id: str
     campaign_name: str
@@ -19,6 +23,19 @@ class QRCodeResponse(BaseModel):
 
 class ScanData(BaseModel):
     scanned_at: datetime
+    os: Optional[str]
+    browser: Optional[str]
+    device_type: Optional[str]
+    country: Optional[str]
+    city: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class ScanLogResponse(BaseModel):
+    id: int
+    scanned_at: datetime
+    ip_address: Optional[str]
     os: Optional[str]
     browser: Optional[str]
     device_type: Optional[str]

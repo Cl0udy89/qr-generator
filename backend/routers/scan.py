@@ -40,11 +40,14 @@ def handle_redirect(qr_id: str, request: Request, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="QR Code not found")
 
     # 2. Extract request info
-    ip = request.client.host if request.client else "Unknown"
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        ip = forwarded.split(",")[0]
-        
+    ip = request.headers.get("cf-connecting-ip")
+    if not ip:
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            ip = forwarded.split(",")[0]
+        else:
+            ip = request.client.host if request.client else "Unknown"
+            
     ua_string = request.headers.get("user-agent", "")
 
     # 3. Save scan data (synchronously for MVP, but ideally in background)

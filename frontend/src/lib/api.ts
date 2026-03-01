@@ -18,8 +18,23 @@ export const getQRCodes = async () => {
     return response.data;
 };
 
-export const getAnalytics = async (qr_id: string) => {
-    const response = await api.get(`/analytics/${qr_id}`);
+export const getAnalytics = async (qr_id: string, timeframe: string = 'all') => {
+    const response = await api.get(`/analytics/${qr_id}?timeframe=${timeframe}`);
+    return response.data;
+};
+
+export const getAnalyticsLogs = async (qr_id: string) => {
+    const response = await api.get(`/analytics/${qr_id}/logs`);
+    return response.data;
+};
+
+export const updateQRCode = async (qr_id: string, campaign_name: string, target_url: string) => {
+    const response = await api.put(`/qr/${qr_id}`, { campaign_name, target_url });
+    return response.data;
+};
+
+export const deleteQRCode = async (qr_id: string) => {
+    const response = await api.delete(`/qr/${qr_id}`);
     return response.data;
 };
 
