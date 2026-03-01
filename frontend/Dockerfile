@@ -3,7 +3,7 @@ FROM node:20
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --no-optional --loglevel verbose --legacy-peer-deps
+RUN npm install
 
 COPY . .
 
