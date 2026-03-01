@@ -5,7 +5,11 @@ const api = axios.create({
 });
 
 export const createQRCode = async (campaign_name: string, target_url: string) => {
-    const response = await api.post('/qr', { campaign_name, target_url });
+    let base_url = 'http://localhost:3000';
+    if (typeof window !== 'undefined') {
+        base_url = window.location.origin;
+    }
+    const response = await api.post('/qr', { campaign_name, target_url, base_url });
     return response.data;
 };
 

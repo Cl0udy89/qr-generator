@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 class QRCodeCreate(BaseModel):
     campaign_name: str
     target_url: HttpUrl
+    base_url: Optional[str] = "http://localhost:3000"
 
 class QRCodeResponse(BaseModel):
     id: str

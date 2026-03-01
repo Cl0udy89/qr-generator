@@ -9,10 +9,8 @@ from typing import List
 
 router = APIRouter()
 
-def generate_qr_image(qr_id: str, target_url: str):
-    # The URL that will be printed in the QR code (points to our backend redirect endpoint)
-    # For MVP we'll construct a relative or generic localhost URL, but in production, we'd use a domain.
-    base_url = os.getenv("BASE_URL", "http://localhost:8000")
+def generate_qr_image(qr_id: str, target_url: str, base_url: str = "http://localhost:3000"):
+    # The URL that will be printed in the QR code (points to our backend redirect endpoint via Next.js Proxy)
     redirect_url = f"{base_url}/r/{qr_id}"
 
     qr = qrcode.QRCode(version=1, box_size=10, border=4)
@@ -29,7 +27,7 @@ def create_qr_code(qr_in: schemas.QRCodeCreate, db: Session = Depends(get_db)):
     qr_id = str(uuid.uuid4())[:8] # Short hash
     
     # Generate image
-    generate_qr_image(qr_id, str(qr_in.target_url))
+    generate_qr_image(qr_id, str(qr_in.target_url), qr_in.base_url)
     
     db_qr = models.QRCodeModel(
         id=qr_id,

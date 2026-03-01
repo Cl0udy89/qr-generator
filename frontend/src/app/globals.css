@@ -34,15 +34,15 @@
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #0f172a;
+  --foreground: #f8fafc;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #f8fafc;
-  }
+body {
+  color: var(--foreground);
+  background: var(--background);
+  background-image: linear-gradient(to bottom right, #0f172a, #1e293b);
+  background-attachment: fixed;
 }
 
 body {

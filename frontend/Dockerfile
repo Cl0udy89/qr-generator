@@ -1,23 +1,41 @@
-FROM node:20-alpine
+# ---- Build Stage ----
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
-
-# Install dependencies required by node-gyp and alpine
 RUN apk add --no-cache libc6-compat python3 make g++
 
-# Configure memory limits for npm/node
 ENV NODE_OPTIONS="--max-old-space-size=1024 --dns-result-order=ipv4first"
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install dependencies first (caching layer)
 COPY package.json package-lock.json* ./
-# Use clean npm install and immediately clear cache in the same layer to save space
-RUN npm ci --prefer-offline --no-audit --no-fund --legacy-peer-deps && \
-    npm cache clean --force
+RUN npm ci --prefer-offline --no-audit --no-fund --legacy-peer-deps
 
-# Copy application source code
 COPY . .
+RUN npm run build
 
-# Run the app in development mode
-CMD ["npm", "run", "dev"]
+# ---- Production Runtime Stage ----
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Standalone output automatically compresses all needed dependencies
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]

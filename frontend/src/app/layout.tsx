@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={`${inter.className} min-h-screen text-slate-900 selection:bg-blue-500/30 antialiased`}>
         <header className="sticky top-0 z-50 w-full glass-panel border-b-white/10 shadow-sm transition-all duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -25,7 +25,7 @@ export default function RootLayout({
               <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-300">
                 <QrCode size={24} className="animate-pulse-slow" />
               </div>
-              <span className="font-extrabold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500">QRytics</span>
+              <span className="font-extrabold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-200 to-slate-400">QRytics</span>
             </Link>
           </div>
         </header>
