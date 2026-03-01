@@ -48,17 +48,20 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  background-image:
-    radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.1) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.1) 0, transparent 50%);
+  background-image: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
   background-attachment: fixed;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image: linear-gradient(to bottom right, #0f172a, #1e293b);
+  }
+}
+
 .glass-panel {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
+  @apply bg-white/90 backdrop-blur-md border border-slate-200 shadow-xl;
 }
 
 .dark .glass-panel {
-  @apply bg-slate-900/70 border-slate-700/50 shadow-2xl;
+  @apply bg-slate-800/90 border-slate-700/50 shadow-2xl;
 }

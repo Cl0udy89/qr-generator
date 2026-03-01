@@ -3,7 +3,11 @@ import axios from 'axios';
 const getBaseURL = () => {
     if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
     if (typeof window !== 'undefined') {
-        return `http://${window.location.hostname}:8000/api`;
+        const hostname = window.location.hostname;
+        if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+            return `${window.location.origin}/api`;
+        }
+        return `http://${hostname}:8000/api`;
     }
     return 'http://localhost:8000/api';
 };
